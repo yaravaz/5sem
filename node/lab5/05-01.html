@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+    
+        #error {
+            color: red;
+            margin-bottom: 20px;
+        }
+    
+        #select_data {
+            margin-bottom: 20px;
+        }
+    
+        .column {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+            padding: 30px;
+            width: 200px;
+        }
+    
+        .row {
+            margin-bottom: 20px; 
+        }
+    
+        label {
+            margin-bottom: 5px;
+        }
+    
+        input {
+            padding: 8px;
+            border: 1px solid rgb(164, 194, 255);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+        }
+    
+        button {
+            padding: 10px;
+            border: none;
+            background-color: rgb(164, 194, 255);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 200px;
+        }
+    
+        .container {
+            display: flex;
+            margin-top: 150px;
+            margin-left: 350px;
+        }
+    </style>
+</head>
+<body>
+    <div id="error"></div>
+    <div id="select_data"></div>
+    <button onClick="select()">Select</button>
+
+    <div class="container">
+        <div class="column">
+            <div class="row">
+                <label for="insert_ID">ID</label>
+                <input type="number" id="insert_ID" min="0"/>
+            </div>
+            <div class="row">
+                <label for="insert_Name">Name</label>
+                <input type="text" id="insert_Name"/>
+            </div>
+            <div class="row">
+                <label for="insert_Bday">Bday</label>
+                <input type="date" id="insert_Bday"/>
+            </div>
+            <button onclick="insert()">Insert</button>
+        </div>
+        
+        <div class="column">
+            <div class="row">
+            <label for="update_ID">ID</label>
+            <input type="number" id="update_ID" min="0"/>
+            </div>
+            <div class="row">
+                <label for="update_Name">Name</label>
+                <input type="text" id="update_Name"/>
+            </div>
+            <div class="row">
+                <label for="update_Bday">Bday</label>
+                <input type="date" id="update_Bday"/>
+            </div>
+            <button onclick="update()">Update</button>
+        </div>
+
+        <div class="column">
+            <div class="row">
+                <label for="delete_ID">ID</label>
+                <input type="number" id="delete_ID" min="0" />
+            </div>
+            <button onclick="deleting()">Delete</button>
+        </div>
+    </div>
+
+<script>
+    let select = () =>{
+        fetch('http://localhost:5000/api/db', {method:'GET', headers: {'Accept': 'application/json'}, mode: "no-cors"})
+        .then(res => res.json())
+        .then(data => {
+            select_data.innerHTML = "";
+            data.forEach(c => select_data.innerHTML += `${c.id} ${c.name} ${c.bday}<br/>`)
+        })
+    }
+
+    let insert = () => {
+        fetch('http://localhost:5000/api/db', {method: 'POST', headers: {'Accept': 'application/json', 'Connect-Type': 'application/json'}, mode: "no-cors",
+            body: JSON.stringify({
+                id: insert_ID.value,
+                name: insert_Name.value,
+                bday: checkDate(insert_Bday.value)
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.error){
+                error.innerHTML = data.error;
+                setTimeout(() => {
+                    error.innerHTML = ""
+                }, 3000)
+            }
+            insert_ID.value = "";
+            insert_Name.value = "";
+            insert_Bday.value = "";
+            select();
+        })
+    }
+
+    let update = () => {
+        fetch('http://localhost:5000/api/db', {method: 'PUT', headers: {'Accept': 'application/json', 'Connect-Type': 'application/json'}, mode: "cors",
+            body: JSON.stringify({
+                id: update_ID.value,
+                name: update_Name.value,
+                bday: checkDate(update_Bday.value)
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.error){
+                error.innerHTML = data.error;
+                setTimeout(() => {
+                    error.innerHTML = ""
+                }, 3000)
+            }
+            update_ID.value = ""
+            update_Name.value = ""
+            update_Bday.value = ""
+            select();
+        });
+    }
+
+    let deleting = () => {
+        fetch(`http://localhost:5000/api/db?id=${delete_ID.value}`, {method: "DELETE", headers: {'Connect-Type': 'application/json'}, mode: "cors",
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.error){
+                error.innerHTML = data.error;
+                setTimeout(() => {
+                    error.innerHTML = ""
+                }, 3000)
+            }
+            delete_ID.value = "";
+            select();
+        })
+    }
+
+    let checkDate = (date) => {
+        let pattern = /(\d{4})\-(\d{2})\-(\d{2})/;
+        return date.replace(pattern,'$3-$2-$1');
+    }
+</script>
+</body>
+</html>

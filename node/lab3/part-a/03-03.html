@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>task №3</title>
+</head>
+<body>
+<div id="text"></div>
+<script type="text/javascript">
+    text.innerHTML = "";
+    let n = 1;
+    let totalTime = null;
+    const ftime = Date.now();
+    for (let i = 1; i <= 20; i++) {
+        fetch(`/fact?k=${i}`, {method: "GET", mode: "no-cors", headers: {'Accept': 'application/json'}})
+            .then(response => response.json())
+            .then(data => {
+                    curTime = (Date.now() - ftime);
+                    text.innerHTML += (n++) + ". Результат: "+ curTime + '-' +
+                    data.k + "/" + data.fact + "<br/>"})
+    }
+
+    setTimeout(() => {text.innerHTML += "Total time: " + curTime + "ms"}, 300);
+
+</script>
+</body>
+</html>

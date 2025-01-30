@@ -1,0 +1,27 @@
+create user c##myuser identified by MyPassword;
+
+grant create session to c##myuser;
+grant create table to c##myuser;
+grant unlimited tablespace to c##myuser;
+grant create any index to c##myuser;
+grant create user to c##myuser;
+grant drop user to c##myuser;
+grant insert any table to c##myuser;
+grant update any table to c##myuser;
+grant select on dba_source to c##myuser;
+grant select on dba_objects to c##myuser;
+grant select on dba_indexes to c##myuser;
+
+grant create session to c##myuser;
+grant create tablespace to c##myuser;
+grant create table to c##myuser;
+grant unlimited tablespace to c##myuser;
+grant create any index to c##myuser;
+grant create user to c##myuser;
+grant drop user to c##myuser;
+grant insert any table to c##myuser;
+grant update any table to c##myuser;
+grant select on dba_source to c##myuser;
+grant select on dba_objects to c##myuser;
+grant select on dba_indexes to c##myuser;
+

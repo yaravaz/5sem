@@ -1,0 +1,109 @@
+---- task 1 ----
+
+select * from DBA_PDBS;
+
+---- task 2 ----
+
+select * from v$instance;
+
+---- task 3 ----
+
+select * from DBA_REGISTRY;
+
+---- task 4 ----
+
+-- creating PDB
+
+---- task 5 ----
+
+select * from DBA_PDBS;
+
+---- task 6 ----
+
+--PDB
+
+--drop tablespace VYR_PDB_TS including contents and datafiles;
+create tablespace VYR_PDB_TS
+  datafile 'VYR_PDB_TS.dbf'
+  size 10M
+  autoextend on next 3M
+  maxsize 25M
+  extent management local;
+
+--drop tablespace VYR_PDB_TS_TEMP including contents and datafiles;
+create temporary tablespace VYR_PDB_TS_TEMP
+  tempfile 'VYR_PDB_TS_TEMP.dbf'
+  size 7M
+  autoextend on next 5M
+  maxsize 40M;
+
+--drop role VYR_PDB_RL;
+create role VYR_PDB_RL;
+
+grant connect, create session, create any table, drop any table, create any view,
+drop any view, create any procedure, drop any procedure to VYR_PDB_RL;
+
+--drop profile VYR_PDB_PF;
+create profile VYR_PDB_PF limit
+  password_life_time 365
+  sessions_per_user 2
+  failed_login_attempts 7
+  password_lock_time 1
+  password_reuse_time 10
+  password_grace_time default
+  connect_time 180
+  idle_time 45;
+
+--drop user U1_VYR_PDB;
+create user U1_VYR_PDB identified by 12345
+default tablespace VYR_PDB_TS quota unlimited on VYR_PDB_TS
+temporary tablespace VYR_PDB_TS_TEMP
+profile VYR_PDB_PF
+account unlock;
+
+grant VYR_PDB_RL to U1_VYR_PDB;
+
+---- task 7 ----
+
+-- U1_VYR_PDB
+
+create table VYR_t ( 
+    x number(2), 
+    y varchar(5)
+);
+
+insert into VYR_t values (1, 'x');
+insert into VYR_t values (10, 'y');
+commit;
+
+select * from VYR_t;
+
+---- task 8 ----
+-- PDB
+
+select * from dba_tablespaces;
+
+select * from dba_data_files;
+select * from dba_temp_files;
+
+select * from dba_roles
+where role like '%VYR%';
+select * from dba_profiles
+where profile like '%VYR%';
+select * from all_users;
+select grantee, privilege from dba_sys_privs;
+
+---- task 9 ----
+-- CDB
+alter session set container = CDB$ROOT;
+create user C##VYR identified by 12345;
+grant connect, create session, alter session, create any table,
+drop any table to C##VYR container = all;
+select * from dba_users;
+
+---- task 10 ----
+
+alter pluggable database VYR_PDB close immediate;
+drop pluggable database VYR_PDB including datafiles;
+drop user C##VYR;
+

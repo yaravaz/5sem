@@ -1,0 +1,10 @@
+connect sys as sysdba
+
+Qwerty12345
+
+
+alter user C##VYRCORE identified by 123456 account unlock;
+
+connect C##VYRCORE
+123456
+
